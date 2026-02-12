@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Stdout (pra ver no docker logs) -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <version>[ignore]</version>
+                <levelValue>[ignore]</levelValue>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+    <!--
+        LOKI APPENDER — envia logs direto pro Loki via HTTP POST.
+        Sem Promtail, sem volume compartilhado, sem docker socket.
+        A app faz push direto. Simples e funciona em qualquer OS.
+    -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${LOKI_URL:-http://localhost:3100/loki/api/v1/push}</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=checkout-service,level=%level</pattern>
+            </label>
+            <message class="com.github.loki4j.logback.JsonLayout" />
+        </format>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="LOKI"/>
+    </root>
+
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="com.github.loki4j" level="WARN"/>
+</configuration>

@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: 'Wide Events'
+    orgId: 1
+    folder: 'Wide Events'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false
